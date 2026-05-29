@@ -72,24 +72,37 @@ Alternatively set `programs.spicetify.enable = false;` and add
 > [!IMPORTANT]
 > Don't install `pkgs.spotify` anywhere The module installs spotify for you!
 
+### Applying the overlay
+
+The flake provides an overlay that adds all spicetify packages under `pkgs.spicetify`:
+
+```nix
+{
+  inputs.spicetify-nix.url = "github:Gerg-L/spicetify-nix";
+
+  outputs = { nixpkgs, spicetify-nix, ... }: let
+    system = "x86_64-linux";
+    pkgs = import nixpkgs {
+      inherit system;
+      overlays = [ spicetify-nix.overlays.default ];
+    };
+  in {
+    # Now pkgs.spicetify.<package> is available
+  };
+}
+```
+
 ### Example Configuration
 
 ```nix
-   let
-     # For Flakeless:
-     # spicePkgs = spicetify-nix.packages;
-
-     # With flakes:
-     spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.system};
-   in
    programs.spicetify = {
      enable = true;
-     enabledExtensions = with spicePkgs.extensions; [
+     enabledExtensions = with pkgs.spicetify.extensions; [
        adblockify
        hidePodcasts
        shuffle # shuffle+ (special characters are sanitized out of extension names)
      ];
-     theme = spicePkgs.themes.catppuccin;
+     theme = pkgs.spicetify.themes.catppuccin;
      colorScheme = "mocha";
    }
 ```

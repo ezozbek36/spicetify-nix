@@ -1,16 +1,9 @@
-self:
-{
-  lib,
-  pkgs,
-  config,
-  ...
-}:
-{
+{ lib, pkgs, config, ... }: {
   options.programs.spicetify = lib.mkOption {
     type = lib.types.submoduleWith {
       specialArgs = { inherit pkgs; };
       modules = [
-        (import ./options.nix self)
+        (import ./options.nix)
       ]
       ++ lib.optional pkgs.stdenv.isLinux ./linuxOpts.nix;
     };

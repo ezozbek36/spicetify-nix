@@ -35,5 +35,5 @@ is named `removePlaylistCover`
 You can view all available snippets using:
 
 ```bash
-nix eval --impure --json --expr 'builtins.attrNames ((builtins.getFlake "github:Gerg-L/spicetify-nix").legacyPackages.x86_64-linux.snippets)'
+nix eval --impure --json --expr 'let pkgs = import <nixpkgs> {}; in builtins.attrNames ((builtins.getFlake "github:Gerg-L/spicetify-nix").overlays.default pkgs pkgs).spicetify.snippets'
 ```

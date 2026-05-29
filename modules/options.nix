@@ -1,12 +1,6 @@
-self:
-{
-  lib,
-  pkgs,
-  config,
-  ...
-}:
+{ lib, pkgs, config, ... }:
 let
-  spicePkgs = self.packages or self.legacyPackages.${pkgs.stdenv.system};
+  spicePkgs = pkgs.spicetify;
 
   extensionType = lib.types.either lib.types.pathInStore (
     lib.types.submodule {

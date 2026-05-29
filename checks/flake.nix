@@ -32,24 +32,24 @@
     {
       checks.x86_64-linux =
         let
-          spicePkgs = spicetify-nix.legacyPackages.x86_64-linux;
+          pkgs = import nixpkgs {
+            system = "x86_64-linux";
+            config.allowUnfree = true;
+            overlays = [ spicetify-nix.overlays.default ];
+          };
           opts = {
             enabledExtensions = builtins.attrValues {
-              inherit (spicePkgs.extensions)
+              inherit (pkgs.spicetify.extensions)
                 adblockify
                 hidePodcasts
                 shuffle
                 ;
             };
-            theme = spicePkgs.themes.catppuccin;
+            theme = pkgs.spicetify.themes.catppuccin;
             colorScheme = "mocha";
           };
           module = {
             programs.spicetify = opts;
-          };
-          pkgs = import nixpkgs {
-            system = "x86_64-linux";
-            config.allowUnfree = true;
           };
 
         in

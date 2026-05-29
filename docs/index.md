@@ -35,7 +35,3 @@ re-made repo for discoverability as github does not like to show forks in the
 search
 
 Modifies Spotify using [spicetify-cli](https://github.com/spicetify/cli).
-
-### Try it out
-
-`nix run github:Gerg-L/spicetify-nix#test`

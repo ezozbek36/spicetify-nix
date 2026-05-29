@@ -1,54 +1,41 @@
 {
   inputs = {
-    nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz";
-    systems = {
-      type = "github";
-      owner = "nix-systems";
-      repo = "default";
-    };
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
-  outputs =
-    {
-      self,
-      nixpkgs,
-      systems,
-      ...
-    }:
-    let
-      inherit (nixpkgs) lib;
-      eachSystem = f: lib.genAttrs (import systems) (s: f nixpkgs.legacyPackages.${s});
-    in
-    {
-      lib = import ./lib { inherit lib self; };
+  outputs = inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [
+        "aarch64-darwin"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "x86_64-linux"
+      ];
 
-      legacyPackages = eachSystem (
-        pkgs:
-        import ./pkgs {
-          inherit pkgs self;
-          unfreePkgs = import nixpkgs {
-            inherit (pkgs.stdenv) system;
-            config.allowUnfreePredicate = pkg: (lib.getName pkg == "spotify");
+      perSystem = { self, pkgs, ... }:
+      let
+        spicePkgs = pkgs.extend self.overlays.default;
+      in
+      {
+        formatter = pkgs.nixfmt;
+
+        devShells = {
+          default = pkgs.mkShellNoCC { packages = [ pkgs.npins ]; };
+          fetcher = pkgs.mkShell {
+            packages = builtins.attrValues { inherit (pkgs) rust-analyzer clippy rustfmt; };
+            inputsFrom = [ spicePkgs.spicetify.fetcher ];
           };
-        }
-      );
-
-      formatter = eachSystem (pkgs: pkgs.nixfmt);
-
-      devShells = eachSystem (pkgs: {
-        default = pkgs.mkShellNoCC { packages = [ pkgs.npins ]; };
-        fetcher = pkgs.mkShell {
-          packages = builtins.attrValues { inherit (pkgs) rust-analyzer clippy rustfmt; };
-          inputsFrom = [ self.legacyPackages.${pkgs.stdenv.system}.fetcher ];
+          docs = pkgs.mkShellNoCC {
+            packages = [ pkgs.nodejs ];
+            env.SPICETIFY_OPTIONS_JSON = spicePkgs.spicetify.docs.optionsJSON;
+          };
         };
-        docs = pkgs.mkShellNoCC {
-          # use npm run dev
-          packages = [
-            pkgs.nodejs
-          ];
-          env.SPICETIFY_OPTIONS_JSON = self.legacyPackages.${pkgs.stdenv.system}.docs.optionsJSON;
-        };
-      });
-    }
-    // import ./modules self;
+      };
+
+      flake = {
+        lib = import ./lib { lib = inputs.nixpkgs.lib; };
+        overlays.default = import ./overlays;
+      } // (import ./modules);
+    };
 }

@@ -1,20 +1,11 @@
-{
-  lib,
-  buildNpmPackage,
-  importNpmLock,
-  nixosOptionsDoc,
-  pkgs,
-
-  self,
-}:
-let
+{ lib, buildNpmPackage, importNpmLock, nixosOptionsDoc, pkgs }: let
   optionsDoc = nixosOptionsDoc {
     inherit
       (
         (lib.evalModules {
           specialArgs = { inherit pkgs; };
           modules = [
-            (import ../modules/options.nix self)
+            (import ../modules/options.nix)
             ../modules/linuxOpts.nix
           ];
         })

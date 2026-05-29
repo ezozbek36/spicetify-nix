@@ -1,5 +1,4 @@
-{ self, lib }:
-{
+{ lib }: {
   mkSpicetify =
     pkgs: module:
     let
@@ -8,7 +7,7 @@
           inherit pkgs;
         };
         modules = [
-          (import ../modules/options.nix self)
+          (import ../modules/options.nix)
           module
         ]
         ++ lib.optional pkgs.stdenv.isLinux ../modules/linuxOpts.nix;
