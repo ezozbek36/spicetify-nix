@@ -48,7 +48,7 @@ Shows the song cover, title, and artist in fullscreen.
 ### keyboardShortcut
 
 Vimium-like navigation of spotify. See keyboard shortcuts
-[here.](https://spicetify.app/docs/advanced-usage/extensions#keyboard-shortcut)
+[here.](https://spicetify.app/docs/customization/extensions#keyboard-shortcut)
 
 ### loopyLoop
 
@@ -242,6 +242,10 @@ Background Vocals and Side Vocals.
 
 Adds the ability to add a track | playlist to the top of your Queue, instantly
 playing it after the currently playing track ends.
+
+### oneko
+
+cat follow mouse (real). A fork of oneko.js modified for Spicetify.
 
 ### starRatings
 
